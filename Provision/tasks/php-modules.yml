@@ -1,0 +1,28 @@
+---
+- name: php modules | Install php modules
+  apt: pkg={{ item }} state=latest
+  with_items: php_packages
+  notify: restart apache
+  tags:
+    - php_modules
+    - common
+    - ldap
+    - memcache
+
+- name: igbinary | Download Igbinary
+  shell: echo "" | pecl install igbinary creates=/usr/lib/php5/20121212/igbinary.so
+  notify: restart apache
+  tags:
+    - php_modules
+    - igbinary
+    - common
+  ignore_errors: yes
+
+- name: igbinary | Download Igbinary
+  shell: echo "extension=igbinary.so" > /etc/php5/mods-available/igbinary.ini && php5enmod igbinary creates=/etc/php5/apache2/mods-available/igbinary.ini
+  notify: restart apache
+  ignore_errors: true
+  tags:
+    - php_modules
+    - igbinary
+    - common

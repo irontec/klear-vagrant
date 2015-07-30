@@ -1,0 +1,46 @@
+---
+- name: phing | Install Phing latest phar
+  shell: wget http://www.phing.info/get/phing-latest.phar -P /usr/local/bin/
+  ignore_errors: yes
+  tags:
+    - phing
+    - common
+
+- name: phing | Install Phing latest phar
+  shell: chmod +x /usr/local/bin/phing-latest.phar
+  ignore_errors: yes
+  tags:
+    - phing
+    - common
+
+- name: phing | Install Phing latest phar
+  shell: ln -s /usr/local/bin/phing-latest.phar /usr/local/bin/phing
+  ignore_errors: yes
+  tags:
+    - phing
+    - common
+
+- name: phing development | Initialize Phing
+  shell: phing -f build_dev.xml init -De=development -Dk=/opt/klear-development -Da=../web/application
+  args:
+    chdir: /vagrant/phing
+  sudo: no
+  ignore_errors: yes
+  tags:
+    - phing
+    - development
+    - phing-init-development
+    - phing-fix
+
+- name: phing development | First Migrate
+  shell: phing -f build_dev.xml migrate -De=development -Dk=/opt/klear-development -Da=../web/application
+  args:
+    chdir: /vagrant/phing
+  sudo: no
+  ignore_errors: yes
+  tags:
+    - phing
+    - phing-migrate-development
+    - development
+    - phing-migrate-development
+    - phing-fix

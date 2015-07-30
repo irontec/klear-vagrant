@@ -1,0 +1,53 @@
+---
+- name: supervisor | Install supervisor
+  apt: pkg=supervisor state=latest
+  tags: 
+    - supervisor
+    - common
+
+- name: supervisor | Copy supervisor configuration file
+  copy: src=files/supervisor/supervisord.conf dest=/etc/supervisor/supervisord.conf
+  tags: 
+    - supervisor
+    - common
+- name: supervisor | adding environment
+  shell: echo "export APPLICATION_ENV=localdev" >> /etc/environment
+  tags:
+    - supervisor
+    - common
+    - supervisorlink
+
+- name: supervisor | adding environment 2
+  shell: echo ". /etc/environment" >> /etc/default/supervisor
+  tags:
+    - supervisor
+    - common
+    - supervisorlink
+
+- name: supervisor | rm /etc/supervisor/conf.d
+  command: rm -rf /etc/supervisor/conf.d
+  tags:
+    - supervisor
+    - common
+    - supervisorlink
+
+- name: supervisor | ln /opt/supervisor/conf.d
+  command: ln -sf /vagrant/Provision/files/supervisor/conf.d /etc/supervisor/conf.d
+  tags:
+    - supervisor
+    - common
+    - supervisorlink
+
+- name: supervisor | make /opt/oasis
+  command: mkdir -p /opt/oasis
+  tags:
+    - supervisor
+    - common
+    - supervisorlink
+    
+- name: supervisor | Link to cli.php for workers
+  command: ln -sf /vagrant/www/portals /opt/oasis/app-portals
+  tags:
+    - supervisor
+    - common
+    - supervisorlink

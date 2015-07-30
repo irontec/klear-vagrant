@@ -1,0 +1,7 @@
+---
+- name: npm packages | Install npm packages
+  shell: npm -g install {{ item }}
+  with_items: npm_packages
+  tags: 
+    - npm_packages
+    - common
