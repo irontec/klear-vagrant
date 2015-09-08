@@ -19,8 +19,9 @@
         AllowOverride All
          <Limit GET HEAD POST PUT DELETE OPTIONS PATCH>
             Order allow,deny
-            allow from all
+            Allow from all
             Require all granted
+            Satisfy Any
         </Limit>
     </Directory>
 
