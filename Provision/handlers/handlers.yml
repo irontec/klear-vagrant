@@ -22,3 +22,9 @@
 
 - name: start syslog
   shell: service inetutils-syslogd start
+
+- name: start postfix
+  service: name=postfix state=started
+  
+- name: restart postfix
+  service: name=postfix state=restarted

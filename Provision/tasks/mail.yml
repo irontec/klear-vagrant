@@ -1,0 +1,27 @@
+---
+- name: mail | Install postfix
+  apt: pkg=postfix state=installed update_cache=true
+  notify:
+    - start postfix
+  tags:
+    - postfix
+    - mail
+    - common
+
+- name: mail | Install mailutils
+  apt: pkg=mailutils state=installed update_cache=true
+  notify:
+    - restart postfix
+  tags:
+    - mailutils
+    - mail
+    - common
+
+- name: mail | Configure postfix
+  copy: src=files/postfix/main.cf dest=/etc/postfix/main.cf force=yes
+  notify: restart postfix
+  tags:
+    - postfix
+    - mail
+    - common
+

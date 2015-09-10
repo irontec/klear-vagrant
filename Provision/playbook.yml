@@ -33,6 +33,7 @@
     - include: handlers/handlers.yml
   tasks:
     - include: tasks/init.yml
+    - include: tasks/mail.yml
     - include: tasks/php-modules.yml
     - include: tasks/php-yaml.yml
     - include: tasks/php-composer.yml

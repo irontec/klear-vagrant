@@ -77,7 +77,7 @@
 
 
 - name: apache | Generate storage folder
-  command: mkdir /vagrant/web/storage creates=/vagrant/web/storage
+  command: mkdir -p /vagrant/web/storage creates=/vagrant/web/storage
   ignore_errors: yes
   tags:
     - apache
@@ -91,7 +91,7 @@
     - common
 
 - name: apache | Generate cache folder
-  command: mkdir {{ application_path }}/cache/ creates={{ application_path }}/cache/
+  command: mkdir -p {{ application_path }}/cache/ creates={{ application_path }}/cache/
   ignore_errors: yes
   tags:
     - apache

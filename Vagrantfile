@@ -21,12 +21,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     config.vm.provider "docker" do |d|
-        d.image = "{{dockerImage}}"
-        #d.build_dir = "./"
+        {{dImageLine}}
+        {{dBuildDirLine}}
         d.has_ssh = true
         d.name = "{{proyectName}}"
         d.ports = ["{{dockerHttpPort}}:80", "{{dockerHttpsPort}}:443"]
-        #d.build_args = ["-t={{proyectName}}"]
+        d.build_args = ["-t={{proyectNameToLowwer}}"]
         d.create_args = ["-h", "{{proyectName}}", "-e", "APPLICATION_ENV=development"]
         d.cmd = ["/sbin/init"]
     end

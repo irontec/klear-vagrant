@@ -11,7 +11,7 @@
     - supervisor
     - common
 - name: supervisor | adding environment
-  shell: echo "export APPLICATION_ENV=localdev" >> /etc/environment
+  shell: echo "export APPLICATION_ENV=development" >> /etc/environment
   tags:
     - supervisor
     - common
@@ -33,20 +33,6 @@
 
 - name: supervisor | ln /opt/supervisor/conf.d
   command: ln -sf /vagrant/Provision/files/supervisor/conf.d /etc/supervisor/conf.d
-  tags:
-    - supervisor
-    - common
-    - supervisorlink
-
-- name: supervisor | make /opt/oasis
-  command: mkdir -p /opt/oasis
-  tags:
-    - supervisor
-    - common
-    - supervisorlink
-    
-- name: supervisor | Link to cli.php for workers
-  command: ln -sf /vagrant/www/portals /opt/oasis/app-portals
   tags:
     - supervisor
     - common

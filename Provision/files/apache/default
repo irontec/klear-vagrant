@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    DocumentRoot /vagrant/web
+    DocumentRoot /vagrant/web/public
 
     SetEnv APPLICATION_ENV development
 
