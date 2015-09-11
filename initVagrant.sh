@@ -29,6 +29,12 @@ else
     dir=`pwd`/$1
 fi
 
+dir=${dir%.}
+dir=${dir%/}
+dir=${dir// /\ }
+
+dirBasename=`basename "$dir"`
+
 if [ -L $0 ]
 then
     scriptFile=$(readlink -f "$0")
@@ -42,18 +48,20 @@ then
 else
     scriptDir=`pwd`/`dirname $scriptFile`
 fi
+scriptDir=${scriptDir// /\ }
 
-cp -r $scriptDir/* $dir/
-rm $dir/initVagrant.sh
-
+cp -r "$scriptDir/"* "$dir/"
+rm "$dir/initVagrant.sh"
 declare -A params
 
-read -p "Nombre del proyecto (Solo letras y/o números): " params[proyectName]
+lowerDirBasename=${dirBasename,,}
+propossedProyectName=${lowerDirBasename// /}
+read -p "Nombre del proyecto (Solo letras y/o números. Por defecto \"$propossedProyectName\"): " params[proyectName]
 if [ -z "${params[proyectName]}" ]
 then
-    echo "Debes especificar un nombre para el proyecto"
-    exit 1
+    params[proyectName]="$propossedProyectName"
 fi
+
 params[proyectNameToLowwer]="${params[proyectName],,}"
 
 read -p "Nombre de la imagen de docker a usar (por defecto 'irontec/debian:jessieInit'): " params[dockerImage]
@@ -111,7 +119,7 @@ params[dBuildDirLine]='d.build_dir = "\.\/"'
 uid=$(id -u)
 params[uid]=$uid
 
-if [ "$uid" == "1000" ]; then
+if [ "$uid" != "1000" ]; then
    echo "El uid del usuario es $uid por lo que no se puede usar la imagen que se encuentra en el servidor"
    echo "Hay que construir una imagen nueva a partir del Dockerfile"
    echo "Al hacer 'vagrant up' se creará una imagen nueva"
@@ -120,7 +128,9 @@ else
     params[dBuildDirLine]="#${params[dBuildDirLine]}"
 fi
 
-for file in $(find $dir/* -not -name "start.sh" -not -name "README.md")
+saveIFS=$IFS
+IFS=$(echo -en "\n\b")
+for file in $(find "$dir/"* -not -name "start.sh" -not -name "README.md")
 do
     for i in "${!params[@]}"
     do
@@ -131,5 +141,5 @@ do
         fi
     done
 done
-
+IFS=$saveIFS
 exit 0
