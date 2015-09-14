@@ -66,23 +66,6 @@
     - php-composer
     - common
 
-- name: apache | Generate web folder
-  command: mkdir -p /vagrant/web/public creates=/vagrant/web/public
-  ignore_errors: yes
-  sudo: yes
-  sudo_user: vagrant
-  tags:
-    - web_server
-    - apache
-    - common
-
-- name: apache | copy index.html
-  command: cp /var/www/html/index.html /vagrant/web/public/index.html
-  tags:
-    - web_server
-    - apache
-    - common
-    
 - name: apache | Install apache
   apt: pkg=apache2-mpm-prefork state=latest
   tags:
@@ -185,4 +168,21 @@
     - web_server
     - php_apache
     - ldap
+    - common
+
+- name: apache | Generate web folder
+  command: mkdir -p /vagrant/web/public creates=/vagrant/web/public
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: vagrant
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | copy index.html
+  command: cp /var/www/html/index.html /vagrant/web/public/index.html
+  tags:
+    - web_server
+    - apache
     - common
