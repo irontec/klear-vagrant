@@ -1,5 +1,11 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
 function checkPort {
     changePort=true
     port=$1
@@ -8,17 +14,17 @@ function checkPort {
     result=$?
     if [ $result -eq 0 ]
     then 
-        echo "Puerto $port ocupado"
+        echo -e "${RED}Puerto $port ocupado${NC}"
         newPort=$((port+1))
         checkPort $newPort
     else
-        echo "Puerto $port libre"
+        echo -e "${GREEN}Puerto $port libre${NC}"
     fi
 }
 
 if [ -z "$1" ]
 then
-    echo "Hay que especificar un directorio de destino"
+    echo -e -e "${RED}Hay que especificar un directorio de destino${NC}"
     exit 1
 fi 
 
@@ -56,61 +62,64 @@ declare -A params
 
 lowerDirBasename=${dirBasename,,}
 propossedProyectName=${lowerDirBasename// /}
-read -p "Nombre del proyecto (Solo letras y/o números. Por defecto \"$propossedProyectName\"): " params[proyectName]
+echo -e "${GREEN}Nombre del proyecto (Solo letras y/o números. ${BLUE}Por defecto \"$propossedProyectName\"${GREEN}): ${NC}"
+read params[proyectName]
 if [ -z "${params[proyectName]}" ]
 then
     params[proyectName]="$propossedProyectName"
 fi
 
 params[proyectNameToLowwer]="${params[proyectName],,}"
-
-read -p "Nombre de la imagen de docker a usar (por defecto 'irontec/debian:jessieInit'): " params[dockerImage]
+echo -e "${GREEN}Nombre de la imagen de docker a usar (${BLUE}por defecto 'irontec/debian:jessieInit'${GREEN}): ${NC}"
+read params[dockerImage]
 if [ -z "${params[dockerImage]}" ]
 then
     params[dockerImage]='irontec/debian:jessieInit'
 fi
 params[dockerImage]="${params[dockerImage]//\//\\\/}"
-
-read -p "Puerto HTTP a mapear (por defecto el 8080): " params[dockerHttpPort]
+echo -e "${GREEN}Puerto HTTP a mapear (${BLUE}por defecto el 8080${GREEN}): ${NC}"
+read params[dockerHttpPort]
 if [ -z "${params[dockerHttpPort]}" ]
 then
     params[dockerHttpPort]="8080"
 fi
 checkPort ${params[dockerHttpPort]}
 params[dockerHttpPort]=$port
-echo "se usará el puerto ${params[dockerHttpPort]}"
+echo -e "${YELLOW}se usará el puerto ${params[dockerHttpPort]}${NC}"
 
-
-read -p "Puerto HTTPS a mapear (por defecto el 9443): " params[dockerHttpsPort]
+echo -e "${GREEN}Puerto HTTPS a mapear (${BLUE}por defecto el 9443${GREEN}): ${NC}"
+read params[dockerHttpsPort]
 if [ -z "${params[dockerHttpsPort]}" ]
 then
     params[dockerHttpsPort]="9443"
 fi
 checkPort ${params[dockerHttpsPort]}
 params[dockerHttpsPort]=$port
-echo "se usará el puerto ${params[dockerHttpsPort]}"
-
-read -p "Carpeta de la librería de Klear (por defecto en '/opt/klear-development'): " params[klearLibraryFolder]
+echo -e "${YELLOW}se usará el puerto ${params[dockerHttpsPort]}${NC}"
+echo -e "${GREEN}Carpeta de la librería de Klear (${BLUE}por defecto en '/opt/klear-development'${GREEN}): ${NC}"
+read params[klearLibraryFolder]
 if [ -z "${params[klearLibraryFolder]}" ]
 then
     params[klearLibraryFolder]="/opt/klear-development"
 fi
 params[klearLibraryFolder]="${params[klearLibraryFolder]//\//\\\/}"
-read -p "Nombre de la base de datos (por defecto el nombre del proyecto): " params[dataBaseName]
+echo -e "${GREEN}Nombre de la base de datos (${BLUE}por defecto el nombre del proyecto${GREEN}): ${NC}"
+read params[dataBaseName]
 if [ -z "${params[dataBaseName]}" ]
 then
-    params[dataBaseName]=${params[dataBaseName]}
+    params[dataBaseName]=${params[proyectNameToLowwer]}
 fi
-read -p "Usuario de la base de datos (por defecto root): " params[dataBaseUser]
+echo -e "${GREEN}Usuario de la base de datos (${BLUE}por defecto root${GREEN}): ${NC}"
+read params[dataBaseUser]
 if [ -z "${params[dataBaseUser]}" ]
 then
     params[dataBaseUser]="root"
 fi
-echo "Contraseña de la base de datos: "
+echo -e "${YELLOW}Contraseña de la base de datos: ${NC}"
 read -s params[dataBasePassword]
 if [ -z "${params[dataBasePassword]}" ]
 then
-    echo "Debes especificar una contraseña para la base de datos"
+    echo -e "${RED}Debes especificar una contraseña para la base de datos${NC}"
     exit 2
 fi
 
@@ -120,16 +129,16 @@ uid=$(id -u)
 params[uid]=$uid
 
 if [ "$uid" != "1000" ]; then
-   echo "El uid del usuario es $uid por lo que no se puede usar la imagen que se encuentra en el servidor"
-   echo "Hay que construir una imagen nueva a partir del Dockerfile"
-   echo "Al hacer 'vagrant up' se creará una imagen nueva"
+   echo -e "${YELLOW}El uid del usuario es $uid por lo que no se puede usar la imagen que se encuentra en el servidor"
+   echo -e "Hay que construir una imagen nueva a partir del Dockerfile"
+   echo -e "Al hacer 'vagrant up' se creará una imagen nueva${NC}"
    params[dImageLine]="#${params[dImageLine]}"
 else
     params[dBuildDirLine]="#${params[dBuildDirLine]}"
 fi
 
 saveIFS=$IFS
-IFS=$(echo -en "\n\b")
+IFS=$(echo -e -en "\n\b")
 for file in $(find "$dir/"* -not -name "start.sh" -not -name "README.md")
 do
     for i in "${!params[@]}"
@@ -141,5 +150,27 @@ do
         fi
     done
 done
+
+
+echo -e "${YELLOW}Elige el rol que quieres configurar: ${NC}"
+for file in $(find "$dir/Provision/roles/"*)
+do
+    task=`basename $file`
+    echo -e "${BLUE}    $task${NC}"
+done
+echo -e "${YELLOW}Task número [${BLUE}por defecto 001${YELLOW}]: ${NC}"
+read taskNumber
+if [ -z "${taskNumber}" ]
+then
+    taskNumber="001"
+fi
+taskFile=$(find "$dir/Provision/roles/$taskNumber-"*)
+taskName=`basename $taskFile`
+echo "    - include: roles/$taskName" >> "$dir/Provision/playbook.yml"
+
 IFS=$saveIFS
+
+echo -e "${GREEN}Se ha configurado correctamente el proyecto para usar con Vagrant, Ansible y Docker."
+echo -e "Ejecuta 'vagrant up' para arrancar el contenedor${NC}"
+
 exit 0

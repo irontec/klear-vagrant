@@ -1,0 +1,9 @@
+---
+
+- name: memcached | Install memcached
+  apt: pkg={{ item }} state=latest
+  with_items: memcached_packages
+  tags: 
+    - memcached
+    - packages
+    - common

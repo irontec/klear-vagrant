@@ -54,11 +54,11 @@
     - nodejs
     - common
   
-- name: npm install | Install proyect dependencies
-  shell: npm install
-  args:
-    chdir: /vagrant/node
-  ignore_errors: true
-  tags: 
-    - npm_install
-    - common
+#- name: npm install | Install proyect dependencies
+#  shell: npm install
+#  args:
+#    chdir: /vagrant/node
+#  ignore_errors: true
+#  tags: 
+#    - npm_install
+#    - common

@@ -3,9 +3,9 @@
   sudo: true
   vars:
     revision: 2
-    sys_packages: ['vim', 'subversion', 'git', 'htop', 'screen', 'portmap','libxml2','librsvg2-bin', 'inetutils-syslogd','ssl-cert']
-    more_sys_packages: ['build-essential','imagemagick','nfs-common', 'memcached']
-    php_packages: ['php5-curl', 'php5-imagick', 'php5-cli', 'php5-dev', 'php5-mysql', 'php5-xdebug', 'php-pear', 'phpunit', 'php-apc', 'php5-memcached', 'php5-gd', 'php5-ldap', 'php5-memcache']
+    sys_packages: ['vim', 'subversion', 'git', 'htop', 'screen', 'portmap','libxml2','librsvg2-bin', 'inetutils-syslogd','ssl-cert', 'build-essential','nfs-common']
+    memcached_packages: ['memcached', 'php5-memcache']
+    php_packages: ['imagemagick', 'php5-curl', 'php5-imagick', 'php5-cli', 'php5-dev', 'php5-mysql', 'php5-xdebug', 'php-pear', 'phpunit', 'php-apc', 'php5-memcached', 'php5-gd', 'php5-ldap']
     phing_packages: ['php-pear']
     gearmand_dependencies: ['re2c', 'libboost-all-dev', 'gperf', 'libevent-dev', 'uuid-dev', 'libcloog-ppl-dev', 'libsqlite3-dev', 'libtokyocabinet-dev']
     npm_packages: ['bower']
@@ -32,18 +32,4 @@
   handlers:
     - include: handlers/handlers.yml
   tasks:
-    - include: tasks/init.yml
-    - include: tasks/mail.yml
-    - include: tasks/php-modules.yml
-    - include: tasks/php-yaml.yml
-    - include: tasks/php-composer.yml
-    - include: tasks/zendframework.yml
-    - include: tasks/apache.yml
-    - include: tasks/database.yml
-    - include: tasks/phing.yml
-    - include: tasks/gearman.yml
-    - include: tasks/supervisor.yml
-    - include: tasks/node.yml
-    - include: tasks/npm-packages.yml
-    - include: tasks/rvm.yml
-    - include: tasks/gem-packages.yml
+    - include: fixedTasks/init.yml

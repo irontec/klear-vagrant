@@ -1,0 +1,8 @@
+---
+
+- include: ../tasks/webserver.yml
+- include: ../tasks/database.yml
+- include: ../tasks/zendframework.yml
+- include: ../tasks/phing.yml
+- include: ../tasks/gearman.yml
+- include: ../tasks/supervisor.yml

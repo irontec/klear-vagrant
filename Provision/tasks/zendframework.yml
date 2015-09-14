@@ -1,4 +1,6 @@
 ---
+
+
 - name: zendframework | Install zend framework
   shell: rm -rf /usr/local/src/zf1 && git clone https://github.com/zendframework/zf1.git /usr/local/src/zf1
   tags: 
@@ -17,4 +19,39 @@
   shell: ln -s /usr/local/src/zf1/library/Zend /usr/share/php/Zend creates=/usr/share/php/Zend/Version.php
   tags: 
     - zendframework
+    - common
+
+- name: klear | Generate storage folder
+  command: mkdir -p /vagrant/web/storage creates=/vagrant/web/storage
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: vagrant
+  tags:
+    - zendframework
+    - storage
+    - common
+
+- name: klear | Change permisions of storage folder
+  command: chmod -R 777 /vagrant/web/storage
+  ignore_errors: yes
+  tags:
+    - zendframework
+    - storage
+    - common
+
+- name: klear | Generate cache folder
+  command: mkdir -p {{ application_path }}/cache/ creates={{ application_path }}/cache/
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: vagrant
+  tags:
+    - zendframework
+    - cache
+    - common
+
+- name: klear | Change permisions of cache folder
+  shell: chmod -R 777  {{ application_path }}/cache/
+  tags:
+    - zendframework
+    - cache
     - common
