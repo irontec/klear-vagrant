@@ -1,7 +1,7 @@
 ---
 - name: npm packages | Install npm packages
-  shell: npm -g install {{ item }}
+  shell: export NVM_DIR="/home/vagrant/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && nvm use default && npm -g install {{ item }}
   with_items: npm_packages
-  tags: 
+  tags:
     - npm_packages
     - common

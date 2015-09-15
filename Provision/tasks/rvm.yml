@@ -1,30 +1,36 @@
 ---
 - name: rvm | Get public key
   shell: gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-  tags: 
+  tags:
     - rvm
     - common
 
 - name: rvm | Install rvm - Ruby Version Manager
   shell: curl -sSL https://get.rvm.io | bash -s stable
-  tags: 
+  tags:
     - rvm
     - common
 
 - name: rvm | Install a ruby version
-  shell: /usr/local/rvm/scripts/rvm install {{ rvm.version }}
-  tags: 
+  shell: /usr/local/rvm/bin/rvm install {{ rvm.version }}
+  tags:
     - rvm
     - common
 
+- name: rvm | Change permissions to /usr/local/rvm
+  shell: chown -R vagrant:vagrant /usr/local/rvm
+
+
 - name: rvm | Set ruby version as default
-  shell: /usr/local/rvm/scripts/rvm use {{ rvm.version }} --default
-  tags: 
+  shell: /usr/local/rvm/bin/rvm alias create default {{ rvm.version }}
+  sudo: true
+  sudo_user: vagrant
+  tags:
     - rvm
     - common
 
 - name: rvm | Add RVM to PATH for scripting
-  shell: PATH=$PATH:/usr/local/rvm/scripts/rvm
-  tags: 
+  shell: PATH=$PATH:/usr/local/rvm/bin/rvm
+  tags:
     - rvm
     - common

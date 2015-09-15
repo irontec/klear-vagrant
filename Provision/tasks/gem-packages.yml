@@ -7,9 +7,12 @@
     - common
 
 - name: gem packages | Install gem packages
-  shell: gem install --pre {{ item }}
+  shell: /bin/bash --login -c "gem install --pre {{item}}"
   with_items: gem_packages
+  sudo: true
+  sudo_user: vagrant
   ignore_errors: yes
-  tags: 
+  tags:
     - gem_packages
     - common
+
