@@ -22,7 +22,7 @@
         encoding: utf8
         collation: utf8_general_ci
     node:
-      version: 0.10.32
+      version: 0.12.7
       prefix: node-v0.10.32
       tarball: node-v0.10.32.tar.gz
       path: /usr/local

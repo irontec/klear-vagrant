@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         {{dBuildDirLine}}
         d.has_ssh = true
         d.name = "{{proyectName}}"
-        d.ports = ["{{dockerHttpPort}}:80", "{{dockerHttpsPort}}:443"]
+        d.ports = {{dockerPorts}}
         d.build_args = ["-t={{proyectNameToLowwer}}"]
         d.create_args = ["-h", "{{proyectName}}", "-e", "APPLICATION_ENV=development"]
         d.cmd = ["/sbin/init"]
@@ -37,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.ssh.insert_key
 
   config.vm.synced_folder "./", "/vagrant"
-  config.vm.synced_folder "{{klearLibraryFolder}}", "/opt/klear-development"
+  {{klearSyncedFolder}}
 
   config.vm.provision "ansible" do |ansible|
      ansible.playbook = "Provision/playbook.yml"

@@ -1,0 +1,4 @@
+---
+
+- include: ../tasks/webserver.yml
+- include: ../tasks/database.yml
