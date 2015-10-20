@@ -1,0 +1,10 @@
+---
+
+- include: ../tasks/webserver.yml
+- include: ../tasks/database.yml
+- include: ../tasks/zendframework.yml
+- include: ../tasks/phing.yml
+- include: ../tasks/node.yml
+- include: ../tasks/npm-packages.yml
+- include: ../tasks/rvm.yml
+- include: ../tasks/gem-packages.yml

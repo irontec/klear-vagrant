@@ -135,6 +135,7 @@ params[dockerPorts]="${dockerPorts}]"
 ###Volúmenes###
 params[klearSyncedFolder]=""
 grep -iq zendframework ${roleFile}
+runKlearStarter=false
 if [ "$?" == "0" ]
 then  
 	echo -e "${GREEN}Carpeta de la librería de Klear (por defecto en '${BLUE}/opt/klear-development${GREEN}'): ${NC}"
@@ -144,6 +145,12 @@ then
 	    params[klearLibraryFolder]="/opt/klear-development"
 	fi
 	params[klearSyncedFolder]="config.vm.synced_folder \"${params[klearLibraryFolder]}\", \"/opt/klear-development\""
+	echo -e "${GREEN}¿Ejecutar klear-starter al terminar?:[Y/n] ${NC}"
+	read klearStarter
+	if [ "${klearStarter}" = "y" ] || [ "${klearStarter}" = "Y" ] 
+	then
+	    runKlearStarter=true
+	fi
 fi
 
 ###Database###
@@ -212,6 +219,16 @@ cp -r $dir/.initVagrant/* $dir/
 rm -rf $dir/.initVagrant
 
 IFS=$saveIFS
+
+if [ ${runKlearStarter} ]
+then
+	echo -e "${GREEN}Ejecutando 'composer create-project irontec/klear-starter $dir/temp'.${NC}"
+
+	composer create-project irontec/klear-starter $dir/temp
+	mv $dir/temp/* $dir/
+	mv $dir/temp/.* $dir/
+	rm -rf $dir/temp
+fi
 
 echo -e "${GREEN}Se ha configurado correctamente el proyecto para usar con Vagrant, Ansible y Docker."
 echo -e "Ejecuta 'vagrant up' para arrancar el contenedor${NC}"
