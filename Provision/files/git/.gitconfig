@@ -1,0 +1,32 @@
+[alias]
+    a = add
+    c = commit
+    co = checkout
+    d = diff --color-words
+    dn = diff --name-status
+    ds = diff --stat
+    l = log
+    b = branch
+    #ficheros ignorados, por el .gitignored
+    i = ls-files --others -i --exclude-standard
+    sb = show-branch
+    #distintas maneras de ver la grafica
+    g = log --graph --pretty=oneline --abbrev-commit --decorate
+    #lg = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+    lg = log --graph --all --pretty=format:'%C(yellow)%h%Creset -%C(bold green)%d %Creset%s%C(cyan) %ar %Cblue%an'
+    ld = log --graph --all --pretty=format:'%C(yellow)%h%Creset -%C(bold green)%d %Creset%s%C(cyan) %ar %Cblue%an' --date-order
+    #me enseña los cambios del commit pasado como parametro o del último
+    l1 = log -1 -p                                                                                                                                                        
+    st = status                                                                                                                                                           
+    pullall = !git submodule foreach git pull && git pull
+    pushall = !git submodule foreach git push && git add `git submodule | awk '{ print $2 }'` && git commit -m'submodulos actualizados' && git push
+    coall = !"f() { git submodule foreach git co $1; git co $1; }; f"
+    branches = !git branch && git submodule foreach git branch
+
+[push]                                                                                                                                                                    
+        default = simple
+
+[credential]
+	helper = cache --timeout=2592000
+[core]
+	editor = vim

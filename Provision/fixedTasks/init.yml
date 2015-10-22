@@ -62,3 +62,21 @@
     - init
     - postfix
     - common
+    
+
+- name: git | Configure aliases for vagrant
+  copy: src=files/git/.gitconfig dest=/home/vagrant/.gitconfig force=yes
+  ignore_errors: true
+  tags:
+    - init
+    - git
+    - common
+
+- name: git | Configure aliases for root
+  copy: src=files/git/.gitconfig dest=/root/.gitconfig force=yes
+  ignore_errors: true
+  tags:
+    - init
+    - git
+    - common
+    
