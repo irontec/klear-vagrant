@@ -2,6 +2,8 @@ FROM debian:jessie
 
 MAINTAINER lfgarcia@irontec.com
 
+ARG uid=1000
+
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt-get update
 RUN apt-get upgrade --yes --force-yes
@@ -12,8 +14,8 @@ RUN apt-get install less sudo screen python curl openssh-server wget vim --yes -
 RUN echo 'root:vagrant' | chpasswd
 
 RUN mkdir /home/vagrant
-RUN groupadd -r vagrant -g {{uid}} && \
-useradd -u {{uid}} -r -g vagrant -d /home/vagrant -s /bin/bash -c "Docker image user" vagrant && \
+RUN groupadd -r vagrant -g $uid && \
+useradd -u $uid -r -g vagrant -d /home/vagrant -s /bin/bash -c "Docker image user" vagrant && \
 chown -R vagrant:vagrant /home/vagrant && \
 echo "vagrant:vagrant" | chpasswd && \
 adduser vagrant sudo && \

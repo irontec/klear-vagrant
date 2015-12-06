@@ -16,7 +16,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     tags = ENV["ANSIBLE_TAGS"]
 
-    if tags == nil 
+    if tags == nil
         tags = "all"
     end
 
@@ -26,7 +26,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         d.has_ssh = true
         d.name = "{{proyectName}}"
         d.ports = {{dockerPorts}}
-        d.build_args = ["-t={{proyectNameToLowwer}}"]
+        d.build_args = ["-t={{proyectNameToLowwer}}", "--build-arg", "uid={{uid}}"]
         d.create_args = ["-h", "{{proyectName}}", "-e", "APPLICATION_ENV=development"]
         d.cmd = ["/sbin/init"]
     end
