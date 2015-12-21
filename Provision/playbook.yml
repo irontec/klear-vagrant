@@ -3,7 +3,7 @@
   sudo: true
   vars:
     revision: 2
-    sys_packages: ['vim', 'subversion', 'git', 'htop', 'screen', 'portmap','libxml2','librsvg2-bin', 'inetutils-syslogd','ssl-cert', 'build-essential','nfs-common']
+    sys_packages: ['vim', 'subversion', 'git', 'htop', 'screen', 'portmap','libxml2','librsvg2-bin', 'inetutils-syslogd', 'logrotate','ssl-cert', 'build-essential','nfs-common']
     memcached_packages: ['memcached', 'php5-memcache']
     php_packages: ['imagemagick', 'php5-curl', 'php5-imagick', 'php5-cli', 'php5-dev', 'php5-mysql', 'php5-xdebug', 'php-pear', 'phpunit', 'php-apc', 'php5-memcached', 'php5-gd', 'php5-ldap','php5-mcrypt']
     phing_packages: ['php-pear']

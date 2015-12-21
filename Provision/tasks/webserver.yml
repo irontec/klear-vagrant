@@ -87,8 +87,8 @@
     - apache
     - common
 
-- name: apache | Enable headers in apache
-  command: a2enmod headers
+- name: apache | Enable headers and proxy in apache
+  command: a2enmod headers proxy proxy_html
   tags:
     - web_server
     - apache

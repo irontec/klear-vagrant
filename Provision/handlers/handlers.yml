@@ -29,3 +29,5 @@
 - name: restart postfix
   service: name=postfix state=restarted
   
+- name: restart inetutils-syslogd
+  service: name=inetutils-syslogd state=started

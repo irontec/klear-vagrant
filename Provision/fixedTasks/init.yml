@@ -33,6 +33,7 @@
 - name: init | Install sys packages
   apt: pkg={{ item }} state=latest
   with_items: sys_packages
+  notify: restart inetutils-syslogd
   tags: 
     - init
     - packages
