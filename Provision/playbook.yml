@@ -18,4 +18,3 @@
     - include: handlers/handlers.yml
   tasks:
     - include: fixedTasks/init.yml
-    - include: roles/009-klear_backend_with_Angular_Frontend.yml
