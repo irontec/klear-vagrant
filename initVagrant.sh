@@ -130,12 +130,12 @@ then
 	checkPort ${params[dockerPhp5HttpPort]}
 	params[dockerPhp5HttpPort]=$port
 	echo -e "${YELLOW}se mappeará el puerto ${params[dockerPhp5HttpPort]} local con el puerto 80 del contenedor${NC}"
-	dockerPhp5Ports="${dockerPhp5Ports},\"${params[dockerPhp5HttpPort]}5:80\""
+	dockerPhp5Ports="${dockerPhp5Ports},\"${params[dockerPhp5HttpPort]}:80\""
 	params[dockerPhp7HttpPort]="8780"
     checkPort ${params[dockerPhp7HttpPort]}
     params[dockerPhp7HttpPort]=$port
 	echo -e "${YELLOW}se mappeará el puerto ${params[dockerPhp7HttpPort]} local con el puerto 80 del contenedor${NC}"
-	dockerPhp7Ports="${dockerPhp7Ports},\"${params[dockerPhp7HttpPort]}7:80\""
+	dockerPhp7Ports="${dockerPhp7Ports},\"${params[dockerPhp7HttpPort]}:80\""
     params[dockerPhp5HttpsPort]="9543"
 	checkPort ${params[dockerPhp5HttpsPort]}
 	params[dockerPhp5HttpsPort]=$port
