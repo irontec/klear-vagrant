@@ -1,0 +1,16 @@
+---
+
+revision: 2
+sys_packages: ['vim', 'subversion', 'git', 'htop', 'screen', 'portmap','libxml2','librsvg2-bin', 'inetutils-syslogd','ssl-cert', 'build-essential','nfs-common', 'logrotate']
+memcached_packages: ['memcached', 'php5-memcache']
+project_name: interwordsextranet
+timezone: Europe/Madrid
+hostname: {{proyectName}}
+application_path: /vagrant/web/application
+credentials:
+  database:
+    user: {{dataBaseUser}}
+    pass: {{dataBasePassword}}
+    db: {{dataBaseName}}
+    encoding: utf8
+    collation: utf8_general_ci

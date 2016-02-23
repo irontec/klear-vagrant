@@ -1,0 +1,81 @@
+---
+- name: Enable Logstash Repository
+  apt_repository: repo="{{ logstash_apt_repo }}" 
+                  state=present
+  tags: 
+    - logstash
+    - kibana
+
+- name: Add Logstash Repo Key
+  apt_key: url="{{ logstash_repo_key }}" 
+           state=present
+  tags: 
+    - logstash
+    - kibana
+
+- name: Install Logstash
+  apt: pkg=logstash
+       update_cache=yes 
+       state=latest
+  tags: 
+    - logstash
+    - kibana
+
+- name: Configure default settings for Logstash (Debian only. Upstart on Ubuntu won't be touched)
+  template: src=files/logstash/defaults.conf.j2
+            dest={{ defaults_Debian }}
+            owner=root
+            group=root
+            mode=0644
+            backup=yes
+  when: ansible_distribution == "Debian"
+  tags: 
+    - logstash
+    - kibana
+   
+- name: Configure default settings for Logstash 02-filebeat-input.conf
+  template: src=files/logstash/02-filebeat-input.conf.j2
+            dest=/etc/logstash/conf.d/02-filebeat-input.conf
+            owner=root
+            group=root
+            mode=0644
+            backup=yes
+  tags: 
+    - logstash
+    - kibana
+   
+- name: Configure default settings for Logstash 10-syslog.conf
+  template: src=files/logstash/10-syslog.conf.j2
+            dest=/etc/logstash/conf.d/10-syslog.conf
+            owner=root
+            group=root
+            mode=0644
+            backup=yes
+  tags: 
+    - logstash
+    - kibana
+   
+- name: Configure default settings for Logstash 30-elasticsearch-output.conf
+  template: src=files/logstash/30-elasticsearch-output.conf.j2
+            dest=/etc/logstash/conf.d/30-elasticsearch-output.conf
+            owner=root
+            group=root
+            mode=0644
+            backup=yes
+  tags: 
+    - logstash
+    - kibana
+   
+- name: logstash configtest
+  shell: service logstash configtest
+  tags: 
+    - logstash
+    - kibana
+    
+- name: start logstash
+  debug: Starting services
+  notify:
+    - restart logstash
+  changed_when: true
+  tags:
+    - services

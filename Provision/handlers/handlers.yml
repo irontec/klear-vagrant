@@ -24,10 +24,33 @@
   shell: service inetutils-syslogd start
 
 - name: start postfix
-  service: name=postfix state=started
+  service: name=postfix state=restarted
+  ignore_errors: yes
   
 - name: restart postfix
   service: name=postfix state=restarted
   
-- name: restart inetutils-syslogd
-  service: name=inetutils-syslogd state=started
+- name: Restart Elasticsearch
+  service: name=elasticsearch state=restarted
+  
+- name: Restart Kibana
+  service: name=kibana state=restarted
+  
+- name: restart logstash
+  service: name=logstash 
+           state=restarted 
+           enabled=yes
+           
+- name: restart filebeat
+  service:
+    name: filebeat
+    state: restarted
+    
+- name: restart redis_6379
+  shell: /etc/init.d/redis_6379 restart
+  
+- name: restart redis-server
+  shell: /etc/init.d/redis-server restart
+  
+- name: restrat cron
+  shell: /etc/init.d/cron restart

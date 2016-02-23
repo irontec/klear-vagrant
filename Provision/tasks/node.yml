@@ -10,11 +10,12 @@
 #   - node.tarball = The tarball filename at nodejs.org
 #   - node.version = The wanted version of node to be installed
 
-- name: init | Give permissions to .bashrc
-  shell: chown vagrant:vagrant /home/vagrant/.bashrc
-  tags:
-    - init
-    - common
+#- name: init | Give permissions to .bashrc
+#  shell: chown vagrant:vagrant /home/vagrant/.bashrc
+#  tags:
+#    - init
+#    - nodejs
+#    - common
 
 - name: Node.js | Download and run nvm install script
   shell: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.26.1/install.sh | bash

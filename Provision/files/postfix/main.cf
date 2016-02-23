@@ -28,10 +28,10 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 # information on enabling SSL in the smtp client.
 
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
-myhostname = {{proyectName}}
+myhostname = eroskicrmoperativo
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-mydestination = no-reply@irontec.com, {{proyectName}}, localhost.localdomain, localhost
+mydestination = no-reply@irontec.com, eroskicrmoperativo, localhost.localdomain, localhost
 relayhost = 10.177.88.26
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0

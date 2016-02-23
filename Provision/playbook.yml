@@ -1,35 +1,21 @@
 ---
+
 - hosts: all
   sudo: true
-  vars:
-    revision: 2
-    sys_packages: ['vim', 'subversion', 'git', 'htop', 'screen', 'portmap','libxml2','librsvg2-bin', 'inetutils-syslogd', 'logrotate','ssl-cert', 'build-essential','nfs-common']
-    memcached_packages: ['memcached', 'php5-memcache']
-    php_packages: ['imagemagick', 'php5-curl', 'php5-imagick', 'php5-cli', 'php5-dev', 'php5-mysql', 'php5-xdebug', 'php-pear', 'phpunit', 'php-apc', 'php5-memcached', 'php5-gd', 'php5-ldap','php5-mcrypt']
-    phing_packages: ['php-pear']
-    gearmand_dependencies: ['re2c', 'libboost-all-dev', 'gperf', 'libevent-dev', 'uuid-dev', 'libcloog-ppl-dev', 'libsqlite3-dev', 'libtokyocabinet-dev']
-    npm_packages: ['bower',  'gulp']
-    gem_packages: ['sass', 'compass']
-    project_name: {{proyectName}}
-    timezone: Europe/Madrid
-    hostname: {{proyectName}}
-    application_path: /vagrant/web/application
-    credentials:
-      database:
-        user: {{dataBaseUser}}
-        pass: {{dataBasePassword}}
-        db: {{dataBaseName}}
-        encoding: utf8
-        collation: utf8_general_ci
-    node:
-      version: 0.12.7
-      prefix: node-v0.10.32
-      tarball: node-v0.10.32.tar.gz
-      path: /usr/local
-    rvm:
-      version: 2.1
-
+  vars_files:
+    - vars/main.yml
+    - vars/php.yml
+    - vars/phing.yml
+    - vars/gearmand.yml
+    - vars/node.yml
+    - vars/ruby.yml    
+    - vars/redis.yml
+    - vars/elasticsearch.yml
+    - vars/kibana.yml
+    - vars/logstash.yml
+    - vars/filebeat.yml
   handlers:
     - include: handlers/handlers.yml
   tasks:
     - include: fixedTasks/init.yml
+    - include: roles/009-klear_backend_with_Angular_Frontend.yml

@@ -1,0 +1,108 @@
+---
+- name: Create service account for Kibana
+  user: name=kibana
+        system=yes
+        home=/var/lib/kibana
+        shell=/bin/false
+        state=present
+  tags:
+    - kibana
+
+- name: Download Kibana
+  get_url: url=https://download.elasticsearch.org/kibana/kibana/kibana-{{ kibana_version }}-{{ kibana_os }}-{{ kibana_arch }}.zip
+           dest=/usr/local/src/kibana-{{ kibana_version }}-{{ kibana_os }}-{{ kibana_arch }}.zip
+  tags:
+    - kibana
+
+- name: Extract and install Kibana
+  unarchive: src=/usr/local/src/kibana-{{ kibana_version }}-{{ kibana_os }}-{{ kibana_arch }}.zip
+             dest={{ kibana_dir }}
+             copy=no
+             creates={{ kibana_dir }}/kibana-{{ kibana_version }}-{{ kibana_os }}-{{ kibana_arch }}
+  tags:
+    - kibana
+
+- name: Configure Kibana
+  template: src=files/kibana/kibana.yml.j2
+            dest={{ kibana_dir }}/kibana-{{ kibana_version }}-{{ kibana_os }}-{{ kibana_arch }}/config/kibana.yml
+  tags:
+    - kibana
+
+- name: link kibana 
+  shell: ln -s {{ kibana_dir }}/kibana-{{ kibana_version }}-{{ kibana_os }}-{{ kibana_arch }} /opt/kibana
+  tags:
+    - kibana
+
+- name: Configure Kibana service definition
+  template: src=files/kibana/kibana.conf.j2 dest=/etc/init/kibana.conf
+  tags:
+    - kibana
+
+- name: Configure kibana service init.d
+  shell: cd /etc/init.d && sudo curl -o kibana https://gist.githubusercontent.com/thisismitch/8b15ac909aed214ad04a/raw/fc5025c3fc499ad8262aff34ba7fde8c87ead7c0/kibana-4.x-init
+  tags:
+    - kibana  
+
+- name: Configure kibana service init.d 2
+  shell: cd /etc/default && sudo curl -o kibana https://gist.githubusercontent.com/thisismitch/8b15ac909aed214ad04a/raw/fc5025c3fc499ad8262aff34ba7fde8c87ead7c0/kibana-4.x-default
+  tags:
+    - kibana  
+
+- name: Configure kibana service init.d 2
+  shell: chmod +x /etc/init.d/kibana
+  tags:
+    - kibana
+
+- name: Touch log file if it does not exist
+  command: touch {{ kibana_log }}
+           creates={{ kibana_log }}
+  tags:
+    - kibana
+        
+
+- name: Set log file permissions
+  file: path={{ kibana_log }} owner=kibana group=kibana mode=0644
+  tags:
+    - kibana
+
+- name: Configure Kibana log rotation
+  template: src=files/kibana/logrotate_kibana.j2 dest=/etc/logrotate.d/kibana
+  tags:
+    - kibana
+    
+- name: kibana apache config | Install dependencies
+  apt:
+    pkg={{ item }}
+    state=present
+  with_items: kibana_apache_apt_dependencies
+  tags:
+    - kibana
+    - kibana-apache
+    
+- name: Enable apache module for kibana  
+  apache2_module: state=present name=proxy_http
+  tags:
+    - kibana
+    - kibana-apache
+    
+- name: Configure apache user for kibana
+  htpasswd: path=/etc/apache2/htpasswd.users name={{ kibana_apache_user }} password={{ kibana_apache_password }} owner=root group=www-data mode=0640 create=yes state=present
+  tags:
+    - kibana
+    - kibana-apache
+
+- name: Configure apache for kibana
+  template: src=files/apache/kibana.conf.j2 dest=/etc/apache2/sites-available/default.conf
+  tags:
+    - kibana
+    - kibana-apache
+    
+
+- name: start kibana
+  debug: Starting services
+  notify:
+    - Restart Kibana
+    - restart apache
+  changed_when: true
+  tags:
+    - services

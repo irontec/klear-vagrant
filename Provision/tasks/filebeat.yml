@@ -1,0 +1,52 @@
+---
+
+- name: install apt-transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+  tags: 
+    - kibana
+    - filebeat
+
+- name: add elastic gpg key
+  apt_key:
+    url: "{{ filebeat_gpg_url }}"
+  tags: 
+    - kibana
+    - filebeat
+
+- name: add beats repository
+  apt_repository:
+    repo: "{{ filebeat_apt_repo }}"
+    state: present
+    update_cache: yes
+  tags: 
+    - kibana
+    - filebeat
+
+- name: install filebeat
+  apt:
+    name: filebeat
+    state: present
+  tags: 
+    - kibana
+    - filebeat
+
+- name: Configure filebeat
+  template: src=files/filebeat/filebeat.yml.j2
+            dest=/etc/filebeat/filebeat.yml
+            owner=root
+            group=root
+            mode=0644
+            backup=yes
+  tags: 
+    - kibana
+    - filebeat
+
+- name: start filebeat
+  debug: Starting services
+  notify:
+    - restart filebeat
+  changed_when: true
+  tags:
+    - services

@@ -1,21 +1,21 @@
 ---
 
-- name: redis | Clone git proyect in src
+- name: redis | Clone git project in src
   shell: git clone https://github.com/antirez/redis.git /usr/src/redis
   tags:
     - redisclone
     - redis
     - common
 
-- name: redis | checkout 3.0.5
-  shell: git checkout tags/3.0.5
+- name: redis | checkout v{{redis.version}}
+  shell: git checkout tags/{{redis.version}}
   args:
     chdir: /usr/src/redis
   tags:
     - redischeckout
     - redis
     - common
-    
+
 - name: redis | make
   shell: make
   args:
@@ -24,7 +24,7 @@
     - redismake
     - redis
     - common
-    
+
 - name: redis | make install
   shell: make install
   args:
@@ -33,14 +33,14 @@
     - redismakeinstall
     - redis
     - common
-    
+
 - name: redis | Change installer to use default options
   copy: src=files/redis/install_server.sh dest=/usr/src/redis/utils/install_server.sh force=yes
   tags:
     - redisdefaults
     - redis
     - common
-    
+
 - name: redis | install
   shell: ./install_server.sh
   args:
@@ -49,3 +49,21 @@
     - redisinstall
     - redis
     - common
+
+
+- name: start init services
+  debug: Starting services
+  notify:
+    - restart redis_6379
+  changed_when: true
+  when: phpVersion == 5
+  tags:
+  
+- name: start init services
+  debug: Starting services
+  notify:
+    - restart redis-server
+  changed_when: true
+  when: phpVersion == 7
+  tags:
+    - services

@@ -1,0 +1,5 @@
+---
+
+gem_packages: ['sass', 'compass']
+rvm:
+  version: 2.1

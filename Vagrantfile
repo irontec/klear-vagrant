@@ -8,41 +8,82 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
 
-    environment = ENV["VAGRANT_ENVIRONMENT"]
-
-    if environment == nil || environment == ""
-        environment = "development"
-    end
-
     tags = ENV["ANSIBLE_TAGS"]
 
     if tags == nil
         tags = "all"
     end
 
-    config.vm.provider "docker" do |d|
+################### Variables a configurar #############################################################################
+  machinesHostName = "{{proyectName}}"
+  machineOne = "default"
+  machineOnePorts = {{dockerPhp5Ports}}
+  machineTwo = "php7"
+  machineTwoPorts = {{dockerPhp7Ports}}
+########################################################################################################################
+
+  config.vm.define machineOne do |php5|
+
+    php5.ssh.port = {{dockerPhp5SshPort}}
+    php5.ssh.guest_port = 22
+    php5.ssh.username  = "vagrant"
+    php5.ssh.password = "vagrant"
+    php5.ssh.insert_key
+  
+    php5.vm.synced_folder "./", "/vagrant"
+    php5.vm.synced_folder "/opt/klear-development", "/opt/klear-development"
+    
+    php5.vm.provider "docker" do |d|
         {{dImageLine}}
         {{dBuildDirLine}}
-        d.has_ssh = true
-        d.name = "{{proyectName}}"
-        d.ports = {{dockerPorts}}
-        d.build_args = ["-t={{proyectNameToLowwer}}", "--build-arg", "uid={{uid}}"]
-        d.create_args = ["-h", "{{proyectName}}", "-e", "APPLICATION_ENV=development"]
+        d.name = machinesHostName + "_" + machineOne
+        d.ports = machineOnePorts
+        d.build_args = ["-t="+machinesHostName, "--build-arg", "uid={{uid}}"]
+        d.create_args = ["-h", machinesHostName + "_" + machineOne, "-e", "APPLICATION_ENV=development"]
         d.cmd = ["/sbin/init"]
+        d.has_ssh = true
     end
 
-    config.ssh.port = 22
-    config.ssh.username  = "vagrant"
-    config.ssh.password = "vagrant"
-    config.ssh.insert_key
+     php5.vm.provision "ansible" do |ansible|
+         ansible.playbook = "Provision/playbook.yml"
+         ansible.tags = tags
+         ansible.verbose = "vvvv"
+         ansible.extra_vars = {
+            phpVersion: 5
+         }
+     end
+  end
 
-  config.vm.synced_folder "./", "/vagrant"
-  {{klearSyncedFolder}}
-
-  config.vm.provision "ansible" do |ansible|
-     ansible.playbook = "Provision/playbook.yml"
-     ansible.tags = tags
-     ansible.verbose = "vvvv"
+  config.vm.define machineTwo, autostart: false do |php7|
+    
+    php7.ssh.port = {{dockerPhp7SshPort}}
+    php7.ssh.guest_port = 22
+    php7.ssh.username  = "vagrant"
+    php7.ssh.password = "vagrant"
+    php7.ssh.insert_key
+  
+    php7.vm.synced_folder "./", "/vagrant"
+    php7.vm.synced_folder "/opt/klear-development", "/opt/klear-development"
+    
+    php7.vm.provider "docker" do |d|
+        {{dImageLine}}
+        {{dBuildDirLine}}
+        d.name = machinesHostName + "_" + machineTwo
+        d.ports = machineTwoPorts
+         d.build_args = ["-t="+machinesHostName, "--build-arg", "uid={{uid}}"]
+        d.create_args = ["-h", machinesHostName + "_" + machineTwo, "-e", "APPLICATION_ENV=development"]
+        d.cmd = ["/sbin/init"]
+        d.has_ssh = true
+    end
+    
+    php7.vm.provision "ansible" do |ansible|
+         ansible.playbook = "Provision/playbook.yml"
+         ansible.tags = tags
+         ansible.verbose = "vvvv"
+         ansible.extra_vars = {
+            phpVersion: 7
+         }
+    end
   end
 
 end

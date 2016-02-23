@@ -23,6 +23,7 @@ echo "vagrant ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/vagrant
 
 RUN cp /etc/skel/.bash* /home/vagrant/
 RUN cp /etc/skel/.profile /home/vagrant/
+RUN chown vagrant:vagrant /home/vagrant/.*
 
 RUN echo "" >> /home/vagrant/.bashrc && \
 echo "alias l='ls $LS_OPTIONS -l'" >> /home/vagrant/.bashrc && \

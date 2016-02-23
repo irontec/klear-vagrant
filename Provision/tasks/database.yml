@@ -27,7 +27,7 @@
   lineinfile:
       dest=/etc/mysql/my.cnf
       backup=yes
-      line="\ndefault-time-zone = UTC\n"
+      line="default-time-zone = UTC"
       owner=root
       state=present
       insertafter="\[mysqld\]\n(?!default-time-zone)"
@@ -37,7 +37,6 @@
 
 - name: database | Create database
   mysql_db: name={{ credentials.database.db }} state=present encoding={{ credentials.database.encoding }} collation={{ credentials.database.collation }}
-  notify: restart mysql
   tags:
     - database
     - common
@@ -47,3 +46,11 @@
   tags:
     - database
     - common
+    
+- name: start mysql
+  debug: Starting services
+  notify:
+    - restart mysql
+  changed_when: true
+  tags:
+    - services

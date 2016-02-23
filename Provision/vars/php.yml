@@ -1,0 +1,6 @@
+---
+
+php_packages: ['imagemagick', 'php5-curl', 'php5-redis', 'php5-imagick', 'php5-cli', 'php5-dev', 'php5-mysql', 'php5-xdebug', 'php-pear', 'phpunit', 'php-apc', 'php5-memcached', 'php5-gd', 'php5-ldap', 'libc-client-dev', 'php5-imap']
+php7_packages: ['imagemagick', 'php-all-dev', 'php7.0-curl', 'php7.0-mysql', 'php7.0-gd', 'php7.0-ldap', 'php7.0-imap', 'php7.0-cli']
+php7_missing_pakages: ['php5-redis', 'php5-imagick', 'php5-xdebug', 'php5-memcached']
+phing_packages: ['php-pear', 'phpunit', 'php-apc', 'libc-client-dev']

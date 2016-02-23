@@ -12,7 +12,8 @@ function checkPort {
     changePort=true
     port=$1
     #netstat -ntpl | grep :${params[dockerHttpPort]} -q
-    docker ps -a | grep "0.0.0.0:$port->" -q
+    #docker ps -a | grep "0.0.0.0:$port->" -q
+    docker inspect $(docker ps -aq) | grep HostPort | grep $port
     result=$?
     if [ $result -eq 0 ]
     then 
@@ -89,6 +90,8 @@ roleFile=$(find "$dir/.initVagrant/Provision/roles/$roleNumber-"*)
 roleName=`basename $roleFile`
 echo "    - include: roles/$roleName" >> "$dir/.initVagrant/Provision/playbook.yml"
 
+echo ${roleFile}
+
 declare -A params
 
 propossedProyectName=${lowerDirBasename// /}
@@ -109,33 +112,49 @@ fi
 #params[dockerImage]="${params[dockerImage]//\//\\/}"
 
 ###Puertos a mapear###
-params[dockerSshPort]="2200"
-checkPort ${params[dockerSshPort]}
-params[dockerSshPort]=$port
-echo -e "${YELLOW}se mapeará el puerto ${params[dockerSshPort]} local con el puerto 22 del contenedor${NC}"
-dockerPorts="[\"${params[dockerSshPort]}:22\""
+params[dockerPhp5SshPort]="2522"
+checkPort ${params[dockerPhp5SshPort]}
+params[dockerPhp5SshPort]=$port
+echo -e "${YELLOW}se mapeará el puerto ${params[dockerPhp5SshPort]} local con el puerto 22 del contenedor${NC}"
+dockerPhp5Ports="[\"${params[dockerPhp5SshPort]}:22\""
+params[dockerPhp7SshPort]="2522"
+checkPort ${params[dockerPhp7SshPort]}
+params[dockerPhp7SshPort]=$port
+echo -e "${YELLOW}se mapeará el puerto ${params[dockerPhp7SshPort]} local con el puerto 22 del contenedor${NC}"
+dockerPhp7Ports="[\"${params[dockerPhp7SshPort]}:22\""
 
 grep -iq webserver ${roleFile}
 if [ "$?" == "0" ]
 then  
-	params[dockerHttpPort]="8080"
-	checkPort ${params[dockerHttpPort]}
-	params[dockerHttpPort]=$port
-	echo -e "${YELLOW}se mappeará el puerto ${params[dockerHttpPort]} local con el puerto 80 del contenedor${NC}"
-	dockerPorts="${dockerPorts},\"${params[dockerHttpPort]}:80\""
-    params[dockerHttpsPort]="9443"
-	checkPort ${params[dockerHttpsPort]}
-	params[dockerHttpsPort]=$port
-	echo -e "${YELLOW}se mapeará el puerto ${params[dockerHttpsPort]} local con el puerto 443 del contenedor${NC}"
-	dockerPorts="${dockerPorts},\"${params[dockerHttspPort]}:443\""
+	params[dockerPhp5HttpPort]="8580"
+	checkPort ${params[dockerPhp5HttpPort]}
+	params[dockerPhp5HttpPort]=$port
+	echo -e "${YELLOW}se mappeará el puerto ${params[dockerPhp5HttpPort]} local con el puerto 80 del contenedor${NC}"
+	dockerPhp5Ports="${dockerPhp5Ports},\"${params[dockerPhp5HttpPort]}5:80\""
+	params[dockerPhp7HttpPort]="8780"
+    checkPort ${params[dockerPhp7HttpPort]}
+    params[dockerPhp7HttpPort]=$port
+	echo -e "${YELLOW}se mappeará el puerto ${params[dockerPhp7HttpPort]} local con el puerto 80 del contenedor${NC}"
+	dockerPhp7Ports="${dockerPhp7Ports},\"${params[dockerPhp7HttpPort]}7:80\""
+    params[dockerPhp5HttpsPort]="9543"
+	checkPort ${params[dockerPhp5HttpsPort]}
+	params[dockerPhp5HttpsPort]=$port
+	echo -e "${YELLOW}se mapeará el puerto ${params[dockerPhp5HttpsPort]} local con el puerto 443 del contenedor${NC}"
+	dockerPhp5Ports="${dockerPhp5Ports},\"${params[dockerPhp5HttpsPort]}:443\""
+    params[dockerPhp7HttpsPort]="9743"
+    checkPort ${params[dockerPhp7HttpsPort]}
+    params[dockerPhp7HttpsPort]=$port
+    echo -e "${YELLOW}se mapeará el puerto ${params[dockerPhp7HttpsPort]} local con el puerto 443 del contenedor${NC}"
+    dockerPhp7Ports="${dockerPhp7Ports},\"${params[dockerPhp7HttpsPort]}:443\""
 fi
-params[dockerPorts]="${dockerPorts}]"
+params[dockerPhp5Ports]="${dockerPhp5Ports}]"
+params[dockerPhp7Ports]="${dockerPhp7Ports}]"
 
 
 ###Volúmenes###
+runKlearStarter=false
 params[klearSyncedFolder]=""
 grep -iq zendframework ${roleFile}
-runKlearStarter=false
 if [ "$?" == "0" ]
 then  
 	echo -e "${GREEN}Carpeta de la librería de Klear (por defecto en '${BLUE}/opt/klear-development${GREEN}'): ${NC}"
@@ -145,12 +164,7 @@ then
 	    params[klearLibraryFolder]="/opt/klear-development"
 	fi
 	params[klearSyncedFolder]="config.vm.synced_folder \"${params[klearLibraryFolder]}\", \"/opt/klear-development\""
-	echo -e "${GREEN}¿Ejecutar klear-starter al terminar?:[Y/n] ${NC}"
-	read klearStarter
-	if [ "${klearStarter}" = "y" ] || [ "${klearStarter}" = "Y" ] 
-	then
-	    runKlearStarter=true
-	fi
+    runKlearStarter=true
 fi
 
 ###Database###
@@ -220,7 +234,7 @@ rm -rf $dir/.initVagrant
 
 IFS=$saveIFS
 
-if [ ${runKlearStarter} ]
+if [ "$runKlearStarter" = true ]
 then
 	echo -e "${GREEN}Ejecutando 'composer create-project irontec/klear-starter $dir/temp'.${NC}"
 

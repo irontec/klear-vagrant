@@ -3,14 +3,14 @@
 - name: init | Configure timezone
   copy: content={{ timezone }} dest=/etc/timezone
   notify: set timezone
-  tags: 
+  tags:
     - init
     - timezone
     - common
 
 - name: init | Configure localtime
   copy: src=/usr/share/zoneinfo/{{ timezone }} dest=/etc/localtime
-  tags: 
+  tags:
     - init
     - timezone
     - common
@@ -18,23 +18,24 @@
 - name: init | enable hostname at hosts
   shell: echo "127.0.1.1 {{ hostname }}" >> /etc/hosts
   ignore_errors: true
-  tags: 
+  tags:
     - init
     - hostname
     - common
 
 - name: init | Update apt
   apt: update_cache=yes
-  tags: 
+  tags:
     - init
     - packages
     - common
 
 - name: init | Install sys packages
   apt: pkg={{ item }} state=latest
+  notify:
+    - start syslog
   with_items: sys_packages
-  notify: restart inetutils-syslogd
-  tags: 
+  tags:
     - init
     - packages
     - common
@@ -63,21 +64,14 @@
     - init
     - postfix
     - common
-    
 
-- name: git | Configure aliases for vagrant
-  copy: src=files/git/.gitconfig dest=/home/vagrant/.gitconfig force=yes
-  ignore_errors: true
-  tags:
-    - init
-    - git
-    - common
-
-- name: git | Configure aliases for root
-  copy: src=files/git/.gitconfig dest=/root/.gitconfig force=yes
-  ignore_errors: true
-  tags:
-    - init
-    - git
-    - common
     
+- name: start init services
+  debug: Starting services
+  notify:
+    - start syslog
+    - start postfix
+    - restrat cron
+  changed_when: true
+  tags:
+    - services

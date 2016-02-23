@@ -1,0 +1,8 @@
+---
+
+npm_packages: ['bower',  'gulp']
+node:
+  version: 4.2.2
+  prefix: node-v4.2.2
+  tarball: node-v4.2.2.tar.gz
+  path: /usr/local

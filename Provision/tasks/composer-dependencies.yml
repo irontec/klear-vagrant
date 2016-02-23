@@ -1,0 +1,10 @@
+---
+- name: composer | Install libraries
+  command: composer install
+  sudo: no
+  args:
+    chdir: /vagrant/web/library/Composer
+  tags:
+    - composer
+    - composer-install
+    - common

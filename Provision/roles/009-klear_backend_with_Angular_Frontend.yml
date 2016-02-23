@@ -8,3 +8,4 @@
 - include: ../tasks/npm-packages.yml
 - include: ../tasks/rvm.yml
 - include: ../tasks/gem-packages.yml
+- include: ../tasks/angular-install.yml

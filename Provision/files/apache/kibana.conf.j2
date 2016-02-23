@@ -1,4 +1,4 @@
-<VirtualHost *:443>
+<VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot /vagrant/web/public
 
@@ -19,26 +19,11 @@
         AllowOverride All
          <Limit GET HEAD POST PUT DELETE OPTIONS PATCH>
             Order allow,deny
-            allow from all
+            Allow from all
             Require all granted
+            Satisfy Any
         </Limit>
     </Directory>
-
-    CustomLog ${APACHE_LOG_DIR}/ssl_access.log combined
-
-    #   SSL Engine Switch:
-    #   Enable/Disable SSL for this virtual host.
-    SSLEngine on
-
-    #   A self-signed (snakeoil) certificate can be created by installing
-    #   the ssl-cert package. See
-    #   /usr/share/doc/apache2.2-common/README.Debian.gz for more info.
-    #   If both key and certificate are stored in the same file, only the
-    #   SSLCertificateFile directive is needed.
-    SSLProtocol TLSv1
-    SSLCipherSuite AES256-SHA:HIGH:MEDIUM:!aNULL:!MD5:!RC4
-    SSLCertificateFile    /etc/ssl/certs/ssl-cert-file.pem
-    SSLCertificateKeyFile /etc/ssl/private/ssl-cert-file.key
 
     ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
     <Directory "/usr/lib/cgi-bin">
@@ -54,13 +39,25 @@
     # alert, emerg.
     LogLevel warn
 
-    <FilesMatch "\.(cgi|shtml|phtml|php)$">
-        SSLOptions +StdEnvVars
-    </FilesMatch>
-    <Directory /usr/lib/cgi-bin>
-        SSLOptions +StdEnvVars
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    Alias /doc/ "/usr/share/doc/"
+    <Directory "/usr/share/doc/">
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride None
+        Order deny,allow
+        Deny from all
+        Allow from 127.0.0.0/255.0.0.0 ::1/128
     </Directory>
 
-    SSLOptions +StdEnvVars +ExportCertData
+    <Proxy http://127.0.0.1:5601/>
+        AuthType Basic
+        AuthName "Authentication Required"
+        AuthUserFile "/etc/apache2/htpasswd.users"
+        Require valid-user
+    </Proxy>
+    ProxyPass "/kibana/" "http://127.0.0.1:5601/"
+    ProxyPassReverse "/kibana/" "http://127.0.0.1:5601/"
+    Redirect "/kibana" "/kibana/"
 
 </VirtualHost>

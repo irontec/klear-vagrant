@@ -1,0 +1,51 @@
+---
+
+- name: add java ppa keys | kibana
+  shell: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+  tags:
+    - kibana
+    - java
+    - java-keys
+
+- name:  install software-properties-common | kibana
+  apt: name=software-properties-common state=latest
+  tags:
+    - kibana
+    - java
+
+- name:  add java ppa | kibana
+  apt_repository: repo='deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main'
+  tags:
+    - kibana
+    - java
+    - kibana-apt
+    
+- name:  add java ppa src | kibana
+  apt_repository: repo='deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main'
+  tags:
+    - kibana
+    - java
+
+- name: Accept Java 8 License | kibana
+  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  tags:
+    - kibana
+    - java
+
+- name: update
+  shell: apt-get update
+  tags:
+    - kibana
+    - java
+  
+- name: Install Oracle Java 8 | kibana
+  sudo: yes
+  apt: name={{item}} state=latest
+  with_items:
+    - oracle-java8-installer
+    - ca-certificates
+    - oracle-java8-set-default
+  tags:
+    - kibana
+    - java
+    

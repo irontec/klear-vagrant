@@ -1,0 +1,210 @@
+---
+
+- name: add php7 repo | Install php7
+  apt_repository: repo='deb http://packages.dotdeb.org jessie all' state=present
+
+- name: add php7 repo | Install php7
+  apt_repository: repo='deb-src http://packages.dotdeb.org jessie all' state=present
+  
+- name: php7 modules | Install php7 modules
+  apt: pkg={{ item }} state=latest force=yes
+  with_items: php7_packages
+  tags:
+    - web_server
+    - php_modules
+    - common
+
+- name: php modules | Install php7 modules
+  apt: pkg={{ item }} state=latest force=yes
+  with_items: php_packages
+  tags:
+    - web_server
+    - php_modules
+    - common
+
+####### NO SE PUEDE INSTALAR pecl CON PHP7 ###############################################
+#- name: igbinary | Download Igbinary php7
+#  shell: echo "" | pecl install igbinary creates=/usr/lib/php5/20121212/igbinary.so
+#  tags:
+#    - web_server
+#    - php_modules
+#    - igbinary
+#    - common
+#  ignore_errors: yes
+
+#- name: igbinary | Download Igbinary
+#  shell: echo "extension=igbinary.so" > /etc/php5/mods-available/igbinary.ini && php5enmod igbinary creates=/etc/php5/apache2/mods-available/igbinary.ini
+#  ignore_errors: true
+#  tags:
+#    - web_server
+#    - php_modules
+#    - igbinary
+#    - common
+#    
+#####################################################################################
+
+
+
+- name: yaml | Install libyaml php7
+  apt: pkg=libyaml-dev state=latest
+  tags:
+    - web_server
+    - yaml
+    - common
+
+
+####### NO SE PUEDE INSTALAR pecl CON PHP7 ###############################################
+#- name: yaml | Install yaml module php7
+#  shell: echo "" | pecl install -f yaml-1.1.1 creates=/usr/lib/php5/20100525/yaml.so
+#  tags:
+#    - web_server
+#    - yaml
+#    - common
+#
+#- name: yaml | Creates yaml.ini file && enable it
+#  shell: echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && php5enmod yaml creates=/etc/php5/apache2/mods-available/yaml.ini
+#  ignore_errors: true
+#  tags:
+#    - web_server
+#    - yaml
+#    - common
+#####################################################################################
+    
+    
+- name: php-composer | Install Composer php7
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  tags: 
+    - web_server
+    - php-composer
+    - common
+
+- name: php-composer | Give Permissions to Composer php7
+  shell: chmod a+x /usr/local/bin/composer
+  tags: 
+    - web_server
+    - php-composer
+    - common
+
+- name: apache | Install apache php7
+  apt: pkg=apache2-mpm-prefork state=latest
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Enable rewrite in apache php7
+  command: a2enmod rewrite
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Enable ssl in apache php7
+  command: a2enmod ssl
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Enable headers in apache php7
+  command: a2enmod headers
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Install php apache module php7
+  apt: pkg=libapache2-mod-php7.0 state=latest force=yes
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | disable default sites php7
+  shell: a2dissite 000-default.conf && a2dissite default-ssl.conf
+  ignore_errors: yes
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Clean sites available php7
+  shell: rm -rf /etc/apache/sites-available/* /etc/apache2/sites-available/*
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Configure apache php7
+  copy: src=files/apache/default dest=/etc/apache2/sites-available/default.conf force=yes
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Enable site and restart php7
+  shell: a2ensite default
+  ignore_errors: yes
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | Creating CA folder php7
+  shell: mkdir -p /etc/ssl/ca/ creates=/etc/ssl/ca/
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: php upload | change post_max_size php7
+  shell: sed -i 's/.*post_max_size =.*/post_max_size = 20M/g' /etc/php/7.0/apache2/php.ini
+  ignore_errors: true
+  tags:
+    - web_server
+    - php_apache
+    - igbinary
+    - common
+
+- name: php upload | change upload_max_filesize php7
+  shell: sed -i 's/.*upload_max_filesize =.*/upload_max_filesize = 20M/g' /etc/php/7.0/apache2/php.ini
+  ignore_errors: true
+  tags:
+    - web_server
+    - php_apache
+    - igbinary
+    - common
+
+- name: php enable ldap | enable ldap php7
+  shell: phpenmod ldap
+  ignore_errors: true
+  tags:
+    - web_server
+    - php_apache
+    - ldap
+    - common
+
+- name: apache | Generate web folder php7
+  command: mkdir -p /vagrant/web/public creates=/vagrant/web/public
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: vagrant
+  tags:
+    - web_server
+    - apache
+    - common
+
+- name: apache | copy index.html php7
+  command: cp /var/www/html/index.html /vagrant/web/public/index.html
+  tags:
+    - web_server
+    - apache
+    - common
+    
+- name: start webserver
+  debug: Starting services
+  notify:
+    - restart apache
+  changed_when: true
+  tags:
+    - services

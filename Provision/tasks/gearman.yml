@@ -36,7 +36,6 @@
 
 - name: gearman | Creates gearman.ini file && enable it
   shell: echo "extension=gearman.so" >  /etc/php5/mods-available/gearman.ini && php5enmod gearman creates=/etc/php5/apache2/mods-available/gearman.ini
-  notify: restart apache
   tags: 
     - gearman
     - common
@@ -55,7 +54,6 @@
 
 - name: gearmand | Create log directory
   shell: mkdir /var/log/gearmand/ -p
-  notify: restart gearmand
   tags: 
     - gearman
     - common
@@ -66,3 +64,13 @@
     - gearman
     - gearmanlog
     - common
+    
+
+- name: start gearmand
+  debug: Starting services
+  notify:
+    - restart gearmand
+    - restart apache
+  changed_when: true
+  tags:
+    - services

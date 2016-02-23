@@ -1,0 +1,3 @@
+---
+
+gearmand_dependencies: ['re2c', 'libboost-all-dev', 'gperf', 'libevent-dev', 'uuid-dev', 'libcloog-ppl-dev', 'libsqlite3-dev', 'libtokyocabinet-dev']
