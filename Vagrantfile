@@ -23,9 +23,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 ########################################################################################################################
 
   config.vm.define machineOne do |php5|
-
+    php5.vm.network "forwarded_port", guest: 22, host: {{dockerPhp5SshPort}}, id: "ssh", auto_correct: false
     php5.ssh.port = 22
-    php5.ssh.guest_port = {{dockerPhp5SshPort}}
     php5.ssh.username  = "vagrant"
     php5.ssh.password = "vagrant"
     php5.ssh.insert_key
@@ -55,9 +54,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define machineTwo, autostart: false do |php7|
-    
+    php7.vm.network "forwarded_port", guest: 22, host: {{dockerPhp7SshPort}}, id: "ssh", auto_correct: false
     php7.ssh.port = 22
-    php7.ssh.guest_port = {{dockerPhp7SshPort}}
     php7.ssh.username  = "vagrant"
     php7.ssh.password = "vagrant"
     php7.ssh.insert_key
