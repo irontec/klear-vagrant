@@ -65,6 +65,15 @@
     - postfix
     - common
 
+- name: xdebug | Copy config file
+  copy: src=files/xdebug/xdebug.ini dest=/etc/php5/mods-available/xdebug.ini force=yes
+  ignore_errors: true
+  notify:
+    - restart apache
+  tags:
+    - init
+    - xdebug
+    - common
     
 - name: start init services
   debug: Starting services
@@ -72,6 +81,7 @@
     - start syslog
     - start postfix
     - restrat cron
+    - restart apache
   changed_when: true
   tags:
     - services
